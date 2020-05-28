@@ -1,0 +1,56 @@
+body {
+  font-family: 'open sans light', arial, sans-serif;
+  text-align: center;
+  font-size: 16px;
+}
+p {
+  margin: 2rem 0;
+}
+
+[hidden] {
+  display: block;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+button {
+  background: #4c8bf5;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+footer {
+  margin-top: 5rem;
+}
+.bitrates {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+.bitrates button {
+  font-size: 1rem;
+  font-family: inherit;
+  display: inline-block;
+  padding: 0;
+  width: 4em;
+  height: 4em;
+  margin: .25em;
+  line-height: 1.5em;
+}
+.bitrates button:hover {
+  background: #2b77f7;
+}
+.bitrates button.active {
+  background: #4c8bf5;
+  outline: 2px solid #4cf553;
+  font-weight: 800;
+}
+
+#pause {
+  margin-top: 1rem;
+  color: #4c8bf5;
+  border: 1px solid #4c8bf5;
+  background: #eee;
+  padding: .5em 1em;
+  border-radius: 4px;
+}
