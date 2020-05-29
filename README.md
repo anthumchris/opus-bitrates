@@ -6,6 +6,8 @@ https://opus-bitrates.anthum.com/
 
 The [Opus Codec](https://opus-codec.org/) allows us to have the smallest and highest-quality audio files on the web.  This demo shows the tradeoffs between file sizes and audio quality.
 
+Not currently supported on Safari because of browser limitations.
+
 # Developers
 
 No build needed, just run a web server from the repo's root folder: `$ python3 -m http.server`
