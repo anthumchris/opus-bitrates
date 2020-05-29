@@ -1,10 +1,12 @@
 // Opus bitrate files to test
-// const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
-const BITRATES = [64]
+const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
 
 init(BITRATES)
 
 async function init(bitrates) {
+  if (/android.*chrome/i.test(navigator.userAgent)) {
+    showWarning('Playback problems occur in Chrome 85 and below on Android. These may still exist in newer versions.')
+  }
   if (!window.AudioWorklet) {
     return showError(Error('This browser does not support Audio Worklets. Please try a different browser.'))
   }
@@ -23,6 +25,10 @@ async function init(bitrates) {
 
   // delay so 100% shows
   setTimeout(_ => initDOM(files, audioCtx, workletNode), 500)
+}
+
+function showWarning(msg) {
+  document.querySelector('#warning').innerText = `⚠️ ${msg}`
 }
 
 function showError(e) {
