@@ -1,9 +1,9 @@
-init()
+// Opus bitrate files to test
+const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
 
-async function init() {
-  // Opus bitrate files to test
-  const bitrates = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
+init(BITRATES)
 
+async function init(bitrates) {
   // start paused
   const audioCtx = new AudioContext({ latencyHint: 'playback' })
   audioCtx.suspend()
@@ -108,12 +108,14 @@ const ProgressManager = (function() {
   const elProgress = document.querySelector('#loading')
   let totalToDownload = 0
   let totalDownloaded = 0
-  let totalFiles = 0
+  let totalFiles = BITRATES.length
+  let totalFilesRegistered = 0
   let totalDecoded = 0
+  let lastTotalProgress = 0
 
   function register(fileSize) {
     totalToDownload += fileSize
-    totalFiles ++
+    totalFilesRegistered++
     updateUI()
   }
 
@@ -124,10 +126,22 @@ const ProgressManager = (function() {
   }
 
   function updateUI() {
+    // reduce total progress until all files report
+    const registeredDownloadsWeight = totalFilesRegistered / totalFiles
+
     const downloadProgress = totalDownloaded/totalToDownload * downloadWeight
     const decodeProgress = totalDecoded/totalFiles * decoderWeight
-    const totalProgress = downloadProgress + decodeProgress
-    elProgress.innerText = Math.floor(totalProgress *100) + ' %'
+    const totalProgress = (downloadProgress + decodeProgress) * registeredDownloadsWeight
+
+    // don't show backwards progress due to recalcs
+    if (totalProgress < lastTotalProgress)
+      return
+
+    lastTotalProgress = totalProgress
+
+    requestAnimationFrame(_ => {
+      elProgress.innerText = Math.floor(totalProgress *100) + ' %'  
+    })
   }
 
   return {
