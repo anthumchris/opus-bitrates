@@ -2,7 +2,7 @@ init()
 
 async function init() {
   // Opus bitrate files to test
-  const bitrates = [2, 6, 10, 16, 32, 64, 96, 192, 512]
+  const bitrates = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
 
   // start paused
   const audioCtx = new AudioContext({ latencyHint: 'playback' })
@@ -11,12 +11,16 @@ async function init() {
   const [{ files, buffers }, workletNode] = await Promise.all([
     fetchAndDecode(bitrates, audioCtx),
     initAudioWorklet(audioCtx)
-  ])
+  ]).catch(showError)
 
   // transfer all decoded audio to Worklet
   workletNode.port.postMessage({ init: files }, buffers)
 
   initDOM(files, audioCtx, workletNode)
+}
+
+function showError(e) {
+  document.querySelector('#status').innerText = 'Error: ' + e.message
 }
 
 function initDOM(files, audioCtx, workletNode) {
@@ -27,19 +31,27 @@ function initDOM(files, audioCtx, workletNode) {
   const buttons = files.map((file, i) => {
     const btn = document.createElement('button')
     btn.addEventListener('mousedown', () => playBitrate(btn, file, i))
-    btn.innerHTML = `${file.bitrate}<br />kbit/s`
+    btn.innerHTML = `<div class="bitrate">${file.bitrate}</div>kbit/s<div class="file-size">${fileSize(file.fileSize)}</div>`
     return btn
   })
 
   wrapper.innerHTML = ''
   wrapper.append(...buttons)
 
+  function fileSize(size) {
+    const kb = size/1024
+    return `${kb.toLocaleString(navigator.language, { maximumFractionDigits: 1 })} KiB`
+  }
 
   function pause() {
     audioCtx.suspend()
     btnPause.hidden = true
+    resetButtons()
   }
 
+  function resetButtons() {
+    buttons.forEach(btn => btn.classList.remove('active'))
+  }
 
   function playBitrate(button, file, index) {
     console.log('playBitrate', file.bitrate)
@@ -47,7 +59,7 @@ function initDOM(files, audioCtx, workletNode) {
     srcParam.setValueAtTime(index, audioCtx.currentTime)
     audioCtx.resume()
 
-    buttons.forEach(btn => btn.classList.remove('active'))
+    resetButtons()
     button.classList.add('active')
 
     btnPause.hidden = false

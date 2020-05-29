@@ -1,56 +1,89 @@
+:root {
+  --blue: #4285f4;
+  /*--blue: #1d68b9;*/
+  --white: #ddd;
+  --gray: #757575;
+  --green: #1DB954;
+}
+
+html, body {
+  margin: 0;
+  background: #212121;
+}
 body {
-  font-family: 'open sans light', arial, sans-serif;
+  font-family: 'open sans', arial, sans-serif;
   text-align: center;
   font-size: 16px;
+  padding: .25rem;
+  color: var(--white);
 }
 p {
   margin: 2rem 0;
 }
+a {
+  color: #4285f4;
+}
 
 [hidden] {
-  display: block;
+  display: inline-block;
   pointer-events: none;
   visibility: hidden;
 }
 
 button {
-  background: #4c8bf5;
-  color: #fff;
+  background: var(--blue);
+  color: var(--white);
   border: none;
   cursor: pointer;
+  user-select: none;
+  box-sizing: content-box;
 }
 
 footer {
-  margin-top: 5rem;
+  margin-top: 2rem;
 }
 .bitrates {
   display: inline-flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  min-height: 14rem;
 }
 .bitrates button {
+  flex-basis: 15%;
   font-size: 1rem;
   font-family: inherit;
   display: inline-block;
   padding: 0;
   width: 4em;
-  height: 4em;
-  margin: .25em;
+  margin: .25rem;
+  padding: 0.75rem 0.25rem;
   line-height: 1.5em;
+  transform: scale(1, 1);
+  transition: transform .2s linear;
 }
 .bitrates button:hover {
-  background: #2b77f7;
+  background: #1c6ef5;
 }
 .bitrates button.active {
-  background: #4c8bf5;
-  outline: 2px solid #4cf553;
-  font-weight: 800;
+  background: #000;
+  outline: 6px solid var(--green);
+  transform: scale(1.1, 1.1);
+  z-index: 1;
+}
+
+.bitrate {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+.file-size {
+  margin-top: .5rem;
+  font-size: .75em;
 }
 
 #pause {
-  margin-top: 1rem;
-  color: #4c8bf5;
-  border: 1px solid #4c8bf5;
-  background: #eee;
-  padding: .5em 1em;
+  margin-top: 2rem;
+  padding: 1em 2em;
   border-radius: 4px;
 }

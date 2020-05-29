@@ -3,9 +3,6 @@ class BitrateSwitcher extends AudioWorkletProcessor {
   currentFile
   readIdx = 0
 
-  debugLoop = 0
-  debugEvery = 250
-
   static get parameterDescriptors () {
     return [{
       name: 'audioSrcIndex',
@@ -52,7 +49,7 @@ class BitrateSwitcher extends AudioWorkletProcessor {
       totalWritten += num
 
       // start over if end reached
-      if (pcmLeft.length - 1 === this.readIdx)
+      if (this.readIdx + 1 === pcmLeft.length)
         this.readIdx = 0
     }
 
