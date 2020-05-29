@@ -82,6 +82,12 @@ footer {
   font-size: .75em;
 }
 
+#loading {
+  margin-top: 1rem;
+  color: var(--green);
+  font-size: 1.5rem;
+}
+
 #pause {
   margin-top: 2rem;
   padding: 1em 2em;

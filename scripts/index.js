@@ -16,7 +16,8 @@ async function init() {
   // transfer all decoded audio to Worklet
   workletNode.port.postMessage({ init: files }, buffers)
 
-  initDOM(files, audioCtx, workletNode)
+  // delay so 100% shows
+  setTimeout(_ => initDOM(files, audioCtx, workletNode), 500)
 }
 
 function showError(e) {
@@ -54,7 +55,6 @@ function initDOM(files, audioCtx, workletNode) {
   }
 
   function playBitrate(button, file, index) {
-    console.log('playBitrate', file.bitrate)
     const srcParam = workletNode.parameters.get('audioSrcIndex')
     srcParam.setValueAtTime(index, audioCtx.currentTime)
     audioCtx.resume()
@@ -75,9 +75,11 @@ async function fetchAndDecode(bitrates, audio) {
 
   // [{ bitrate, fileSize, pcmLeft, pcmRight }]
   const files = await Promise.all(bitrates.map(async bitrate => {
-    const response = await fetch(`audio/music-${bitrate}.opus`)
+    const origResponse = await fetch(`audio/music-${bitrate}.opus`)
+    const response = downloadProgressResponse(origResponse)
     const fileSize = response.headers.get('content-length')
     const audioBuffer = await audio.decodeAudioData(await response.arrayBuffer())
+    ProgressManager.report({ decoded: 1 })
     const pcmLeft =  audioBuffer.getChannelData(0)
     const pcmRight = audioBuffer.getChannelData(1)
     buffers.push(pcmLeft.buffer, pcmRight.buffer)
@@ -95,3 +97,96 @@ async function initAudioWorklet(audioCtx) {
   workletNode.connect(audioCtx.destination)
   return workletNode
 }
+
+
+const ProgressManager = (function() {
+  // weigh downloads more than decoder since they take longer
+  // increases progress update frequency
+  const downloadWeight = .8
+  const decoderWeight = 1-downloadWeight
+
+  const elProgress = document.querySelector('#loading')
+  let totalToDownload = 0
+  let totalDownloaded = 0
+  let totalFiles = 0
+  let totalDecoded = 0
+
+  function register(fileSize) {
+    totalToDownload += fileSize
+    totalFiles ++
+    updateUI()
+  }
+
+  function report({ bytesDownloaded, decoded }) {
+    totalDownloaded += bytesDownloaded || 0
+    totalDecoded += decoded || 0
+    updateUI()
+  }
+
+  function updateUI() {
+    const downloadProgress = totalDownloaded/totalToDownload * downloadWeight
+    const decodeProgress = totalDecoded/totalFiles * decoderWeight
+    const totalProgress = downloadProgress + decodeProgress
+    elProgress.innerText = Math.floor(totalProgress *100) + ' %'
+  }
+
+  return {
+    register,
+    report
+  }  
+})()
+
+
+// Returns a new Response that also makes onProgress during download progress
+function downloadProgressResponse(response) {
+  if (!response.ok) {
+    throw Error(response.status+' '+response.statusText)
+  }
+
+  if (!response.body) {
+    throw Error('ReadableStream not yet supported in this browser.')
+  }
+
+  // to access headers, server must send CORS header "Access-Control-Expose-Headers: content-encoding, content-length x-file-size"
+  // server must send custom x-file-size header if gzip or other content-encoding is used
+  const contentEncoding = response.headers.get('content-encoding')
+  const contentLength = response.headers.get(contentEncoding ? 'x-file-size' : 'content-length')
+  if (contentLength === null) {
+    throw Error('Response size header unavailable')
+  }
+
+  const total = parseInt(contentLength, 10)
+  let bytesDownloaded = 0
+
+  ProgressManager.register(total)
+
+  return new Response(
+    new ReadableStream({
+      start(controller) {
+        const reader = response.body.getReader()
+
+        read()
+
+        function read() {
+          reader.read().then(({done, value}) => {
+            if (done) {
+              controller.close()
+              return 
+            }
+            bytesDownloaded = value.byteLength
+            ProgressManager.report({ bytesDownloaded })
+            controller.enqueue(value)
+            read()
+          }).catch(error => {
+            console.error(error)
+            controller.error(error)                  
+          })
+        }
+      }
+    }),
+    {
+      headers: new Headers(response.headers)
+    }
+  )  
+}
+
