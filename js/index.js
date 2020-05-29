@@ -90,7 +90,7 @@ async function fetchAndDecode(bitrates, audio) {
 }
 
 async function initAudioWorklet(audioCtx) {
-  await audioCtx.audioWorklet.addModule('scripts/worklet-bitrate-switcher.js')
+  await audioCtx.audioWorklet.addModule('js/worklet-bitrate-switcher.js')
   const workletNode = new AudioWorkletNode(audioCtx, 'bitrate-switcher', {
     outputChannelCount: [2]  // stereo
   })
