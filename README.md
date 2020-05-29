@@ -14,5 +14,5 @@ An `AudioWorklet` is used to instantly switch between decoded audio via an `Audi
 
 If you'd like to test your own files locally, encode a few files using the command below and provide [`BITRATES`](https://github.com/AnthumChris/opus-bitrates/blob/ad8f7f972e4660f13dbf431ae8b2c7964d9bd9e5/js/index.js#L1) values for the files you encoded.  Mind the memory usage because all files will be decoded and stored in the `AudioWorklet`.  That adds up if many long files are tested.
 ```
-$ opusenc --hard-cbr --max-delay 0 --bitrate $BITRATE music.wav music-$BITRATE.opus
+$ opusenc --hard-cbr --max-delay 0 --bitrate $BITRATE music.flac music-$BITRATE.opus
 ```
