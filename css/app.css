@@ -59,8 +59,6 @@ footer {
   margin: .25rem;
   padding: 0.75rem 0.25rem;
   line-height: 1.5em;
-  transform: scale(1, 1);
-  transition: transform .2s linear;
 }
 .bitrates button:hover {
   background: #1c6ef5;
