@@ -5,7 +5,7 @@ init(BITRATES)
 
 async function init(bitrates) {
   if (!window.AudioWorklet) {
-    return showError(Error('This browser does not support Audio Worklets. Please use Firefox or Chrome.'))
+    return showError(Error('This browser does not support Audio Worklets. Please try a different browser.'))
   }
 
   // start paused
