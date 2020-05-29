@@ -1,6 +1,6 @@
-# Opus Audio Bitrate Listening Test
+### Demo: https://opus-bitrates.anthum.com
 
-### Demo: https://opus-bitrates.anthum.com/
+# Opus Audio Bitrate Listening Test
 
 The [Opus Codec](https://opus-codec.org/) allows us to have the smallest and highest-quality audio files on the web.  This demo shows the tradeoffs between file sizes and audio quality.
 
