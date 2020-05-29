@@ -80,6 +80,10 @@ footer {
   font-size: .75em;
 }
 
+.error {
+  color: #f00;
+}
+
 #loading {
   margin-top: 1rem;
   color: var(--green);

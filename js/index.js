@@ -4,8 +4,12 @@ const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
 init(BITRATES)
 
 async function init(bitrates) {
+  if (!window.AudioWorklet) {
+    return showError(Error('This browser does not support Audio Worklets. Please use Firefox or Chrome.'))
+  }
+
   // start paused
-  const audioCtx = new AudioContext({ latencyHint: 'playback' })
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'playback' })
   audioCtx.suspend()
 
   const [{ files, buffers }, workletNode] = await Promise.all([
@@ -21,7 +25,9 @@ async function init(bitrates) {
 }
 
 function showError(e) {
-  document.querySelector('#status').innerText = 'Error: ' + e.message
+  const status = document.querySelector('#status')
+  status.classList.add('error')
+  status.innerText = 'ERROR: ' + e.message
 }
 
 function initDOM(files, audioCtx, workletNode) {
