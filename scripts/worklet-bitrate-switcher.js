@@ -1,8 +1,11 @@
+// receives a bunch of decoded audio files and switches between them in realtime
+// All files must have equal sample lengths, otherwise playback sync is impossible
 class BitrateSwitcher extends AudioWorkletProcessor {
-  files = null
-  currentFile
-  readIdx = 0
+  files = null  // all the decoded bitrate files with left/right channels
+  currentFile   // current bitrate file playing
+  readIdx = 0   // wrap-around pointer for reading files and looping
 
+  // main thread signals a bitrate change via audioSrcIndex param
   static get parameterDescriptors () {
     return [{
       name: 'audioSrcIndex',
@@ -34,6 +37,7 @@ class BitrateSwitcher extends AudioWorkletProcessor {
     const maxCanWrite = outLeft.length // 128 frames currently
     let totalWritten = 0
 
+    // TODO refactor to a simpler for loop
     // loop file when it gets to end of input buffer. iterates at most twice
     while (totalWritten < maxCanWrite) {
       // handle end of buffer max
