@@ -25,36 +25,19 @@ class BitrateSwitcher extends AudioWorkletProcessor {
 
   process(inputs, [[ outLeft, outRight ]], { audioSrcIndex }) {
     // set bitrate file to play
-    const idx = audioSrcIndex[0]
-    if (idx >= 0) {
-      this.currentFile = this.files[idx]
+    this._idx = audioSrcIndex[0]
+    if (this._idx >= 0) {
+      this.currentFile = this.files[this._idx]
     }
 
-    // samples to read from
-    const { pcmLeft, pcmRight } = this.currentFile
-
-    // samples to write per quantum loop
-    const maxCanWrite = outLeft.length // 128 frames currently
-    let totalWritten = 0
-
-    // TODO refactor to a simpler for loop
-    // loop file when it gets to end of input buffer. iterates at most twice
-    while (totalWritten < maxCanWrite) {
-      // handle end of buffer max
-      const num = Math.min(
-        maxCanWrite - totalWritten,
-        pcmLeft.length - 1 - this.readIdx
-      )
-
-      outLeft.set(pcmLeft.subarray(this.readIdx, this.readIdx + num), totalWritten)
-      outRight.set(pcmRight.subarray(this.readIdx, this.readIdx + num), totalWritten)
-
-      this.readIdx += num
-      totalWritten += num
-
-      // start over if end reached
-      if (this.readIdx + 1 === pcmLeft.length)
+    for (let i=0; i < outLeft.length; i++, this.readIdx++) {
+      // wrap around and loop at end
+      if (this.readIdx === this.currentFile.pcmLeft.length) {
         this.readIdx = 0
+      }
+
+      outLeft[i] = this.currentFile.pcmLeft[this.readIdx]
+      outRight[i] = this.currentFile.pcmRight[this.readIdx]
     }
 
     return true

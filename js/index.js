@@ -1,5 +1,6 @@
 // Opus bitrate files to test
-const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
+// const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
+const BITRATES = [64]
 
 init(BITRATES)
 
