@@ -4,7 +4,7 @@
 
 The [Opus Codec](https://opus-codec.org/) allows us to have the smallest and highest-quality audio files on the web.  This demo shows the tradeoffs between file sizes and audio quality.
 
-Not currently supported on Safari because of browser limitations.
+Not working on Safari or iOS because of browser limitations (`AudioWorklet` unsupported).  Mobile Chrome 85 and below on Android results in choppy audio playback ([Chromium issue #1090441](https://bugs.chromium.org/p/chromium/issues/detail?id=1090441)).
 
 # Developers
 
