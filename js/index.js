@@ -1,5 +1,8 @@
 // Opus bitrate files to test
-const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512]
+const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512].reverse()
+
+const AUDIO_FOLDER_URL = 'audio/hyper',
+      AUDIO_LOOP_START_MS = 2085
 
 init(BITRATES)
 
@@ -88,7 +91,7 @@ async function fetchAndDecode(bitrates, audio) {
 
   // [{ bitrate, fileSize, pcmLeft, pcmRight }]
   const files = await Promise.all(bitrates.map(async bitrate => {
-    const origResponse = await fetch(`audio/music-${bitrate}.opus`)
+    const origResponse = await fetch(`${AUDIO_FOLDER_URL}/music-${bitrate}.opus`)
     const response = downloadProgressResponse(origResponse)
     const fileSize = response.headers.get('content-length')
     const audioBuffer = await audio.decodeAudioData(await response.arrayBuffer())
@@ -103,9 +106,14 @@ async function fetchAndDecode(bitrates, audio) {
 }
 
 async function initAudioWorklet(audioCtx) {
-  await audioCtx.audioWorklet.addModule('js/worklet-bitrate-switcher.js')
+  // ading random nonce to avoid reuse of cached file
+  await audioCtx.audioWorklet.addModule('js/worklet-bitrate-switcher.js?'+Date.now())
+  
   const workletNode = new AudioWorkletNode(audioCtx, 'bitrate-switcher', {
-    outputChannelCount: [2]  // stereo
+    outputChannelCount: [2],  // stereo
+    processorOptions: {
+      loopStartMs: AUDIO_LOOP_START_MS,  // optional. Milliseconds to start the loop (if music has an intro)
+    },
   })
   workletNode.connect(audioCtx.destination)
   return workletNode

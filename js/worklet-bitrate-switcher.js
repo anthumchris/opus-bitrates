@@ -3,7 +3,8 @@
 class BitrateSwitcher extends AudioWorkletProcessor {
   files = null  // all the decoded bitrate files with left/right channels
   currentFile   // current bitrate file playing
-  readIdx = 0   // wrap-around pointer for reading files and looping
+  readIdx       // wrap-around pointer for reading files and looping
+  loopStartIdx  // Normally zero unless your loop file has an intro
 
   // main thread signals a bitrate change via audioSrcIndex param
   static get parameterDescriptors () {
@@ -13,16 +14,18 @@ class BitrateSwitcher extends AudioWorkletProcessor {
     }]
   }
 
-  constructor() {
+  constructor(options) {
     super()
     this.port.onmessage = ({ data }) => {
       if (data.init) {
         this.files = data.init
         this.readIdx = 0
+        this.loopStartIdx = (options.processorOptions?.loopStartMs || 0) * sampleRate / 1000
       }
     }
   }
 
+  // play and loop audio when it ends
   process(inputs, [[ outLeft, outRight ]], { audioSrcIndex }) {
     // set bitrate file to play
     this._idx = audioSrcIndex[0]
@@ -33,7 +36,7 @@ class BitrateSwitcher extends AudioWorkletProcessor {
     for (let i=0; i < outLeft.length; i++, this.readIdx++) {
       // wrap around and loop at end
       if (this.readIdx === this.currentFile.pcmLeft.length) {
-        this.readIdx = 0
+        this.readIdx = this.loopStartIdx
       }
 
       outLeft[i] = this.currentFile.pcmLeft[this.readIdx]
