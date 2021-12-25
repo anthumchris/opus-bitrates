@@ -20,7 +20,7 @@ class BitrateSwitcher extends AudioWorkletProcessor {
       if (data.init) {
         this.files = data.init
         this.readIdx = 0
-        this.loopStartIdx = (options.processorOptions?.loopStartMs || 0) * sampleRate / 1000
+        this.loopStartIdx = Math.round((options.processorOptions?.loopStartMs || 0) * sampleRate / 1000)
       }
     }
   }
