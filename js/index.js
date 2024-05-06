@@ -91,7 +91,7 @@ async function fetchAndDecode(bitrates, audio) {
 
   // [{ bitrate, fileSize, pcmLeft, pcmRight }]
   const files = await Promise.all(bitrates.map(async bitrate => {
-    const origResponse = await fetch(`${AUDIO_FOLDER_URL}/music-${bitrate}.opus`)
+    const origResponse = await fetch(`${AUDIO_FOLDER_URL}/music-${bitrate}.webm`)
     const response = downloadProgressResponse(origResponse)
     const fileSize = response.headers.get('content-length')
     const audioBuffer = await audio.decodeAudioData(await response.arrayBuffer())
