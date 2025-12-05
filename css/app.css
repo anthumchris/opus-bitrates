@@ -48,6 +48,7 @@ footer {
   align-items: center;
   justify-content: center;
   min-height: 14rem;
+  max-width: 800px;
 }
 .bitrates button {
   flex-basis: 15%;

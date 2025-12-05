@@ -1,5 +1,5 @@
 // Opus bitrate files to test
-const BITRATES = [2, 6, 10, 16, 32, 64, 96, 128, 192, 512].reverse()
+const BITRATES = [2, 6, 10, 16, 32, 48, 64, 80, 96, 112, 128, 160, 192, 256, 512].reverse()
 
 const AUDIO_FOLDER_URL = 'audio/hyper',
       AUDIO_LOOP_START_MS = 2085
